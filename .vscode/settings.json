@@ -1,0 +1,17 @@
+{
+    "Lua.diagnostics.globals": [
+        "LibDebugLogger",
+        "LibChatMessage",
+        "TrainMount",
+        "STABLE_TRAIN_STAMINA",
+        "STABLE_TRAIN_CARRYING_CAPACITY",
+        "LibSlashCommander",
+        "LibTableFunctions",
+        "STABLE_TRAIN_SPEED",
+        "CanStableMasterTrainMount",
+        "EVENT_MANAGER",
+        "EVENT_ADD_ON_LOADED",
+        "EVENT_PLAYER_ACTIVATED",
+        "ZO_SavedVars"
+    ]
+}

@@ -1,0 +1,10 @@
+## Title: MountBuddy
+## Description: Automatically trains mount training at the stable.
+## Author: @RizzleMaTizzle
+## APIVersion: 101039
+## AddOnVersion: 1
+## IsLibrary: False
+## SavedVariables: MountBuddySavedVariables
+## DependsOn: LibChatMessage LibDebugLogger>=180 LibSlashCommander LibTableFunctions-1.0
+
+MountBuddy.lua
