@@ -1,29 +1,21 @@
 local MB_NS = {
   ADDON_NAME = "MountBuddy",
   SAVED_VAR_NAME = "MountBuddySavedVariables",
-  DEFAULT = {
-    TRAINING_TYPE = "speed"
-  },
+  DEFAULT = { TRAINING_TYPE = "speed" },
   VARIABLE_VERSION = 1,
-  DB = {
-    TRAINING_TYPE = "speed"
-  },
+  DB = {},
   HELP_TEXT = [[
+   
     /mountbuddy - Prints this help information.
     /mountbuddy-set speed - Sets addon to train mount speed.
     /mountbuddy-set stamina - Sets addon to train mount stamina.
     /mountbuddy-set carrying - Sets addon to train carrying capacity.
     /mountbuddy-get - Gets current training type.
   ]],
-  TRAINING_TYPES = {
-    STAMINA = "stamina",
-    SPEED = "speed",
-    CARRYING = "carrying"
-  },
   BUTTON_NAMES = {
-    [TRAINING_TYPES.STAMINA] = "ZO_StablePanelStaminaTrainRowTrainButton",
-    [TRAINING_TYPES.SPEED] = "ZO_StablePanelSpeedTrainRowTrainButton",
-    [TRAINING_TYPES.CARRYING] = "ZO_StablePanelCarryTrainRowTrainButton"
+    ["stamina"] = "ZO_StablePanelStaminaTrainRowTrainButton",
+    ["speed"] = "ZO_StablePanelSpeedTrainRowTrainButton",
+    ["carrying"] = "ZO_StablePanelCarryTrainRowTrainButton"
   }
 }
 
@@ -34,7 +26,7 @@ end
 
 --set which mount training to do
 function MB_NS.setTrainingType(input)
-  if not TRAINING_TYPES[input] then
+  if not MB_NS.BUTTON_NAMES[input] then
     MB_NS.printHelp()
     return
   end
@@ -49,7 +41,7 @@ end
 
 --get the current mount training
 function MB_NS.getTrainingType()
-  return BUTTON_NAMES[MB_NS.DB.TRAINING_TYPE]
+  return MB_NS.BUTTON_NAMES[MB_NS.DB.TRAINING_TYPE]
 end
 
 --skip stable dialog

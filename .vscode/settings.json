@@ -13,6 +13,9 @@
         "EVENT_ADD_ON_LOADED",
         "EVENT_PLAYER_ACTIVATED",
         "ZO_SavedVars",
-        "EVENT_CHATTER_BEGIN"
+        "EVENT_CHATTER_BEGIN",
+        "TRAINING_TYPES",
+        "d",
+        "SCENE_MANAGER"
     ]
 }
