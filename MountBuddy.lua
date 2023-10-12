@@ -69,7 +69,7 @@ function MB_NS.onAddOnLoad(event, addonName)
    -- Return if not the correct addon
    if addonName ~= MB_NS.ADDON_NAME then return end
    MB_NS.CHAT:Print(string.format("%s loaded.", MB_NS.ADDON_NAME))
-   MB_NS.DB = ZO_SavedVars:NewAccountWide(MB_NS.SAVED_VAR_NAME, MB_NS.VARIABLE_VERSION, nil,MB_NS.DEFAULT)
+   MB_NS.DB = ZO_SavedVars:NewCharacterIdSettings(MB_NS.SAVED_VAR_NAME, MB_NS.VARIABLE_VERSION, nil,MB_NS.DEFAULT)
    EVENT_MANAGER:UnregisterForEvent(MB_NS.ADDON_NAME, EVENT_ADD_ON_LOADED)
 end
 
