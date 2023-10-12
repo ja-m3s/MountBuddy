@@ -5,6 +5,5 @@
 ## AddOnVersion: 1
 ## IsLibrary: False
 ## SavedVariables: MountBuddySavedVariables
-## DependsOn: LibChatMessage
 
 MountBuddy.lua
