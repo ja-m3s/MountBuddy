@@ -1,5 +1,6 @@
 # MountBuddy
-Automatically trains mount at the stable
+
+An Elder Scrolls Online addon that automatically trains mount skills at the stablemaster.
 
 ## View all commands in game with:
     /mountbuddy
@@ -8,9 +9,9 @@ Automatically trains mount at the stable
 1. LibChatMessage 
 
 ## To test:
-1. Install git
-2. Open up a command line in your ESO addon folder 
-3. Enter command git clone https://github.com/ja-m3s/MountBuddy
+1. Install git.
+2. Open up a command line in your ESO addon folder.
+3. Enter command git clone https://github.com/ja-m3s/MountBuddy .
 
 OR
 
