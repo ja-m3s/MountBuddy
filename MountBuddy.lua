@@ -1,4 +1,3 @@
--- GuildMan Namespace
 local MB_NS = {
   ADDON_NAME = "MountBuddy",
   SAVED_VAR_NAME = "MountBuddySavedVariables",
@@ -28,7 +27,7 @@ local MB_NS = {
   }
 }
 
---- Prints the help info
+--prints the help info
 function MB_NS.printHelp()
   d(MB_NS.HELP_TEXT)
 end
@@ -43,12 +42,17 @@ function MB_NS.setTrainingType(input)
   MB_NS.printTrainingType()
 end
 
---get the current mount training
+--print the current mount training
 function MB_NS.printTrainingType()
   d(string.format("Training Type set to: %s", MB_NS.DB.TRAINING_TYPE))
 end
 
--- Skip stable dialog
+--get the current mount training
+function MB_NS.getTrainingType()
+  return BUTTON_NAMES[MB_NS.DB.TRAINING_TYPE]
+end
+
+--skip stable dialog
 function MB_NS.skipChat(_, optionCount)
   if optionCount <= 0 then return end
 
@@ -58,19 +62,15 @@ function MB_NS.skipChat(_, optionCount)
   SelectChatterOption(1)
 end
 
-function MB_NS.getTrainingType()
-  return BUTTON_NAMES[MB_NS.DB.TRAINING_TYPE]
-end
-
 function MB_NS.trainMount()
   local control = GetControl(MB_NS.getTrainingType())
   ZO_Stable_TrainButtonClicked(control)
   SCENE_MANAGER:ShowBaseScene()
 end
 
---- Startup
+--startup
 function MB_NS.onAddonLoad(event, addonName)
-  -- Return if not the correct addon
+  --exit if not the correct addon
   if addonName ~= MB_NS.ADDON_NAME then return end
   d(string.format("%s loaded.", MB_NS.ADDON_NAME))
   MB_NS.DB = ZO_SavedVars:NewCharacterIdSettings(MB_NS.SAVED_VAR_NAME, MB_NS.VARIABLE_VERSION, nil, MB_NS.DEFAULT)
@@ -81,12 +81,12 @@ function MB_NS.registerEvent(eventName, callback)
   EVENT_MANAGER:RegisterForEvent(MB_NS.ADDON_NAME, eventName, callback)
 end
 
---Setup slash commands
+--setup slash commands
 SLASH_COMMANDS["/mountbuddy"] = MB_NS.printHelp
 SLASH_COMMANDS["/mountbuddy-set"] = MB_NS.setTrainingType
 SLASH_COMMANDS["/mountbuddy-get"] = MB_NS.printTrainingType
 
---Register events
+--register events
 MB_NS.registerEvent(EVENT_STABLE_INTERACT_START, MB_NS.trainMount)
 MB_NS.registerEvent(EVENT_CHATTER_BEGIN, MB_NS.skipChat)
 MB_NS.registerEvent(EVENT_ADD_ON_LOADED, MB_NS.onAddonLoad)
