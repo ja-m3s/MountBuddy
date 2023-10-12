@@ -1,101 +1,83 @@
 -- GuildMan Namespace
-MOUNTBUDDY_NS = {
+local MB_NS = {
   ADDON_NAME = "MountBuddy",
   SHORT_ADDON_NAME = "MB",
   SAVED_VAR_NAME = "MountBuddySavedVariables",
-  SLASH_CMD = { { "/mountbuddy", "/mb" }, "print help info" },
-  SLASH_SUBCMDS = {
-    { { "help", "h" },     'func', "print help info" },
-    { { "priority", "p" }, 'func', "set priority" }
-  },
   DEFAULT = {},
   VARIABLE_VERSION = 1,
   DB = {
-    PRIORITY = "STABLE_TRAIN_SPEED"
-  }
-};
+    PRIORITY = "speed"
+  },
+  CARRY_BUTTON="ZO_StablePanelCarryTrainRowTrainButton",
+  SPEED_BUTTON="ZO_StablePanelSpeedTrainRowTrainButton",
+  STAMINA_BUTTON="ZO_StablePanelStaminaTrainRowTrainButton",
+  HELP_TEXT=[[
 
-MOUNTBUDDY_NS.LOGGER = LibDebugLogger(MOUNTBUDDY_NS.ADDON_NAME)
-MOUNTBUDDY_NS.CHAT = LibChatMessage(MOUNTBUDDY_NS.ADDON_NAME, MOUNTBUDDY_NS.SHORT_ADDON_NAME)
-MOUNTBUDDY_NS.LIB_SLASH_CMDR = LibSlashCommander
-MOUNTBUDDY_NS.LTF = LibTableFunctions
+    /mountbuddy - Prints this help information.
+    /mountbuddy-set speed - Sets addon to train mount speed.
+    /mountbuddy-set stamina - Sets addon to train mount stamina.
+    /mountbuddy-set carrying - Sets addon to train carrying capacity.
+    /mountbuddy-get - Gets current training type.
+  ]]
+}
 
--- Functions
+MB_NS.CHAT = LibChatMessage(MB_NS.ADDON_NAME, MB_NS.SHORT_ADDON_NAME)
 
 --- Prints the help info
-function MOUNTBUDDY_NS.printHelp()
-  local strHelp = string.format("Help:\nType: %s or %s <command>\n<command> can be:\n", MOUNTBUDDY_NS.SLASH_CMD[1][1],
-    MOUNTBUDDY_NS.SLASH_CMD[1][2])
-  for _, sub_cmd in ipairs(MOUNTBUDDY_NS.SLASH_SUBCMDS) do
-    local strSubCmd = string.format("%s (%s) - %s \n", sub_cmd[1][1], sub_cmd[1][2], sub_cmd[3])
-    strHelp = strHelp .. strSubCmd
-  end
-  MOUNTBUDDY_NS.CHAT:Print(strHelp)
+function MB_NS.printHelp()
+  MB_NS.CHAT:Print(MB_NS.HELP_TEXT)
 end
 
 --set which mount training to do
-function MOUNTBUDDY_NS.setPriority(input)
-  if input == "stamina" then
-    MOUNTBUDDY_NS.DB.PRIORITY = STABLE_TRAIN_SPEED
-  elseif input == "speed" then
-    MOUNTBUDDY_NS.DB.PRIORITY = STABLE_TRAIN_STAMINA
-  elseif input == "carrying" then
-    MOUNTBUDDY_NS.DB.PRIORITY = STABLE_TRAIN_CARRYING_CAPACITY
-  else
-    MOUNTBUDDY_NS.CHAT:Print("Valid Options are: stamina, speed, carrying")
-    return
+function MB_NS.setPriority(input)
+  if input ~= "stamina" and input ~= "speed" and input ~= "carrying" then 
+    MB_NS.printHelp()
+    return 
   end
-  MOUNTBUDDY_NS.CHAT:Print(string.format("Priority set to %s", input))
+  MB_NS.DB.PRIORITY = input
+  MB_NS.printPriority()
 end
 
 --get the current mount training
-function MOUNTBUDDY_NS.getPriority()
-  MOUNTBUDDY_NS.CHAT:Print(MOUNTBUDDY_NS.DB.PRIORITY)
+function MB_NS.printPriority()
+  MB_NS.CHAT:Print("Training Type set to: " .. MB_NS.DB.PRIORITY)
 end
 
--- Create a callback function for the EVENT_PLAYER_ACTIVATED event
-function MOUNTBUDDY_NS.OnPlayerActivated(eventCode)
-  if CanStableMasterTrainMount() then
-    TrainMount(MOUNTBUDDY_NS.DB.PRIORITY)
-  end
+-- Skip stable dialog
+function MB_NS.skipChat(_, optionCount)
+  if optionCount <= 0 then return end
+
+  local _, optionType = GetChatterOption(1)
+  if optionType ~= CHATTER_START_STABLE then return end
+
+  SelectChatterOption(1)
 end
 
---- register commands with slash commander addon
-function MOUNTBUDDY_NS.RegisterSlashCommands()
-  -- Assign functions
-  MOUNTBUDDY_NS.SLASH_SUBCMDS[1][2] = MOUNTBUDDY_NS.printHelp
-  MOUNTBUDDY_NS.SLASH_SUBCMDS[2][2] = MOUNTBUDDY_NS.setPriority
-  MOUNTBUDDY_NS.SLASH_SUBCMDS[3][2] = MOUNTBUDDY_NS.getPriority
+function MB_NS.getPriority()
+  if MB_NS.DB.PRIORITY == "stamina" then return MB_NS.STAMINA_BUTTON end
+  if MB_NS.DB.PRIORITY == "speed" then return MB_NS.SPEED_BUTTON end
+  if MB_NS.DB.PRIORITY == "carrying" then return MB_NS.CARRY_BUTTON end
+end
 
-  -- Register Slash Command
-  local command = MOUNTBUDDY_NS.LIB_SLASH_CMDR:Register()
-  command:AddAlias(MOUNTBUDDY_NS.SLASH_CMD[1][1])
-  command:AddAlias(MOUNTBUDDY_NS.SLASH_CMD[1][2])
-  command:SetCallback(MOUNTBUDDY_NS.printHelp)
-  command:SetDescription(MOUNTBUDDY_NS.SLASH_CMD[2])
-
-  -- Register Slash Subcommands
-  for _, sub_cmd in ipairs(MOUNTBUDDY_NS.SLASH_SUBCMDS) do
-    local subcommand = command:RegisterSubCommand()
-    subcommand:AddAlias(sub_cmd[1][1])
-    subcommand:AddAlias(sub_cmd[1][2])
-    subcommand:SetCallback(sub_cmd[2])
-    subcommand:SetDescription(sub_cmd[3])
-  end
+function MB_NS.trainMount()
+    local control = GetControl(MB_NS.getPriority())
+    ZO_Stable_TrainButtonClicked(control)
+    SCENE_MANAGER:ShowBaseScene()
 end
 
 --- Startup
-function MOUNTBUDDY_NS.OnAddOnLoaded(event, addonName)
-  if addonName ~= MOUNTBUDDY_NS.ADDON_NAME then return end
-
-  local initialMsg = string.format("Loaded Addon: %s", MOUNTBUDDY_NS.ADDON_NAME)
-  MOUNTBUDDY_NS.LOGGER:Info(initialMsg)
-  MOUNTBUDDY_NS.CHAT:Print(initialMsg)
-  MOUNTBUDDY_NS.RegisterSlashCommands()
-  MOUNTBUDDY_NS.DB = ZO_SavedVars:NewAccountWide(MOUNTBUDDY_NS.SAVED_VAR_NAME, MOUNTBUDDY_NS.VARIABLE_VERSION, nil,
-    MOUNTBUDDY_NS.DEFAULT)
-  EVENT_MANAGER:UnregisterForEvent(MOUNTBUDDY_NS.ADDON_NAME, EVENT_ADD_ON_LOADED)
+function MB_NS.onAddOnLoad(event, addonName)
+   -- Return if not the correct addon
+   if addonName ~= MB_NS.ADDON_NAME then return end
+   MB_NS.CHAT:Print(string.format("%s loaded.", MB_NS.ADDON_NAME))
+   MB_NS.DB = ZO_SavedVars:NewAccountWide(MB_NS.SAVED_VAR_NAME, MB_NS.VARIABLE_VERSION, nil,MB_NS.DEFAULT)
+   EVENT_MANAGER:UnregisterForEvent(MB_NS.ADDON_NAME, EVENT_ADD_ON_LOADED)
 end
 
-EVENT_MANAGER:RegisterForEvent(MOUNTBUDDY_NS.ADDON_NAME, EVENT_ADD_ON_LOADED, MOUNTBUDDY_NS.OnAddOnLoaded)
-EVENT_MANAGER:RegisterForEvent(MOUNTBUDDY_NS.ADDON_NAME, EVENT_PLAYER_ACTIVATED, MOUNTBUDDY_NS.OnPlayerActivated)
+SLASH_COMMANDS["/mountbuddy"] = MB_NS.printHelp
+SLASH_COMMANDS["/mountbuddy-set"] = MB_NS.setPriority
+SLASH_COMMANDS["/mountbuddy-get"] = MB_NS.printPriority
+
+EVENT_MANAGER:RegisterForEvent(MB_NS.ADDON_NAME, EVENT_STABLE_INTERACT_START, MB_NS.trainMount)
+EVENT_MANAGER:RegisterForEvent(MB_NS.ADDON_NAME, EVENT_CHATTER_BEGIN, MB_NS.skipChat)
+EVENT_MANAGER:RegisterForEvent(MB_NS.ADDON_NAME, EVENT_ADD_ON_LOADED, MB_NS.onAddOnLoad)

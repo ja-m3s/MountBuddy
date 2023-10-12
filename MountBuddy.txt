@@ -5,6 +5,6 @@
 ## AddOnVersion: 1
 ## IsLibrary: False
 ## SavedVariables: MountBuddySavedVariables
-## DependsOn: LibChatMessage LibDebugLogger>=180 LibSlashCommander LibTableFunctions-1.0
+## DependsOn: LibChatMessage
 
 MountBuddy.lua
