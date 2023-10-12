@@ -3,14 +3,13 @@ local MB_NS = {
   ADDON_NAME = "MountBuddy",
   SHORT_ADDON_NAME = "MB",
   SAVED_VAR_NAME = "MountBuddySavedVariables",
-  DEFAULT = {},
+  DEFAULT = {
+    TRAINING_TYPE = "speed"
+  },
   VARIABLE_VERSION = 1,
   DB = {
-    PRIORITY = "speed"
+    TRAINING_TYPE = "speed"
   },
-  CARRY_BUTTON="ZO_StablePanelCarryTrainRowTrainButton",
-  SPEED_BUTTON="ZO_StablePanelSpeedTrainRowTrainButton",
-  STAMINA_BUTTON="ZO_StablePanelStaminaTrainRowTrainButton",
   HELP_TEXT=[[
 
     /mountbuddy - Prints this help information.
@@ -29,18 +28,18 @@ function MB_NS.printHelp()
 end
 
 --set which mount training to do
-function MB_NS.setPriority(input)
+function MB_NS.setTrainingType(input)
   if input ~= "stamina" and input ~= "speed" and input ~= "carrying" then 
     MB_NS.printHelp()
     return 
   end
-  MB_NS.DB.PRIORITY = input
-  MB_NS.printPriority()
+  MB_NS.DB.TRAINING_TYPE = input
+  MB_NS.printTrainingType()
 end
 
 --get the current mount training
-function MB_NS.printPriority()
-  MB_NS.CHAT:Print("Training Type set to: " .. MB_NS.DB.PRIORITY)
+function MB_NS.printTrainingType()
+  MB_NS.CHAT:Print("Training Type set to: " .. MB_NS.DB.TRAINING_TYPE)
 end
 
 -- Skip stable dialog
@@ -53,14 +52,14 @@ function MB_NS.skipChat(_, optionCount)
   SelectChatterOption(1)
 end
 
-function MB_NS.getPriority()
-  if MB_NS.DB.PRIORITY == "stamina" then return MB_NS.STAMINA_BUTTON end
-  if MB_NS.DB.PRIORITY == "speed" then return MB_NS.SPEED_BUTTON end
-  if MB_NS.DB.PRIORITY == "carrying" then return MB_NS.CARRY_BUTTON end
+function MB_NS.getTrainingType()
+  if MB_NS.DB.TRAINING_TYPE == "stamina" then return "ZO_StablePanelStaminaTrainRowTrainButton" end
+  if MB_NS.DB.TRAINING_TYPE == "speed" then return "ZO_StablePanelSpeedTrainRowTrainButton" end
+  if MB_NS.DB.TRAINING_TYPE == "carrying" then return "ZO_StablePanelCarryTrainRowTrainButton" end
 end
 
 function MB_NS.trainMount()
-    local control = GetControl(MB_NS.getPriority())
+    local control = GetControl(MB_NS.getTrainingType())
     ZO_Stable_TrainButtonClicked(control)
     SCENE_MANAGER:ShowBaseScene()
 end
@@ -75,8 +74,8 @@ function MB_NS.onAddOnLoad(event, addonName)
 end
 
 SLASH_COMMANDS["/mountbuddy"] = MB_NS.printHelp
-SLASH_COMMANDS["/mountbuddy-set"] = MB_NS.setPriority
-SLASH_COMMANDS["/mountbuddy-get"] = MB_NS.printPriority
+SLASH_COMMANDS["/mountbuddy-set"] = MB_NS.setTrainingType
+SLASH_COMMANDS["/mountbuddy-get"] = MB_NS.printTrainingType
 
 EVENT_MANAGER:RegisterForEvent(MB_NS.ADDON_NAME, EVENT_STABLE_INTERACT_START, MB_NS.trainMount)
 EVENT_MANAGER:RegisterForEvent(MB_NS.ADDON_NAME, EVENT_CHATTER_BEGIN, MB_NS.skipChat)
