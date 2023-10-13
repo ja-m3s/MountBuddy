@@ -5,9 +5,6 @@ An Elder Scrolls Online addon that automatically trains mount skills at the stab
 ## View all commands in game with:
     /mountbuddy
 
-## The following addons are dependencies:
-1. LibChatMessage 
-
 ## To test:
 1. Install git.
 2. Open up a command line in your ESO addon folder.
@@ -19,4 +16,4 @@ OR
 
 ## Ideas for improvement:
 
-1. Handle a priority list of training types, so no user input is ever required.
+1. A little frame which shows which characters have trained today.
