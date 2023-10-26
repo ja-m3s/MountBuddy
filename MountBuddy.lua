@@ -63,11 +63,16 @@ function MountBuddy:skipChat(_, optionCount)
 end
 
 function MountBuddy:trainMount()
+  local gold = GetCurrencyAmount(CURT_MONEY, CURRENCY_LOCATION_CHARACTER)
+
   for _, trainType in ipairs(self.SAVED_VARIABLES.TRAINING_ORDER) do
     local control = GetControl(self.BUTTON_NAMES[trainType])
     ZO_Stable_TrainButtonClicked(control)
   end
   SCENE_MANAGER:ShowBaseScene()
+
+  goldAfterTraining = GetCurrencyAmount(CURT_MONEY, CURRENCY_LOCATION_CHARACTER)
+  if tonumber(goldAfterTraining) < tonumber(gold) then d("Mount Trained") end
 end
 
 --startup
